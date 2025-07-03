@@ -2,11 +2,3 @@ spring:
   application:
     name: docker-pool
 
-exec-code-container:
-  image-name: "exec-code-image"
-  host-working-dir: "G:\code_exec_docker_v"
-  container-working-dir: "/app"
-  max-execution-time-seconds: 10
-  memory-limit-mb: 512
-  cpu-limit-cores: 1
-

@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
@@ -63,7 +64,7 @@ public class CodeExecContainer extends DockerContainer{
                             long timeout,
                             TimeUnit timeunit
     ) {
-        ExecCreateCmdResponse resp = this.createCmd("time", "-f", "__TIME__:%U %S %E %M","java", workingDir + "/" + fileName);
+        ExecCreateCmdResponse resp = this.createCmd("time", "-f", "__TIME__:%U %S %E %M","java", workingDir + File.separator + fileName);
         boolean awaited = false;
         ByteArrayOutputStream stdout = new ByteArrayOutputStream();
         ByteArrayOutputStream stderr = new ByteArrayOutputStream();

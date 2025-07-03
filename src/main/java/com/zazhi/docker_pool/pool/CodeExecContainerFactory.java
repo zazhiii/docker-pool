@@ -7,6 +7,7 @@ import com.github.dockerjava.api.model.HostConfig;
 import com.github.dockerjava.api.model.Volume;
 import com.zazhi.docker_pool.pojo.CodeExecContainer;
 
+import java.io.File;
 import java.util.UUID;
 
 /**
@@ -36,7 +37,7 @@ public class CodeExecContainerFactory {
 
     public CodeExecContainer createDockerContainer(String containerName) {
 
-        String hostWorkingDir = this.hostWorkingDir + "/" + UUID.randomUUID(); // 使用 UUID 确保每个容器的工作目录唯一
+        String hostWorkingDir = this.hostWorkingDir + File.separator + UUID.randomUUID(); // 使用 UUID 确保每个容器的工作目录唯一
 
         CreateContainerResponse createRes = dockerClient.createContainerCmd(imageName)
                 .withHostConfig(
