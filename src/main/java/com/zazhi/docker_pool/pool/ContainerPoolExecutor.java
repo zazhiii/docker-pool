@@ -1,6 +1,7 @@
 package com.zazhi.docker_pool.pool;
 
 import com.zazhi.docker_pool.pojo.CodeExecContainer;
+import com.zazhi.docker_pool.pojo.DockerContainer;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -13,22 +14,22 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @date 2025/7/2
  * @description: ContainerPoolExecutor 类用于管理容器池的执行器
  */
-public class ContainerPoolExecutor {
+public class ContainerPoolExecutor<T extends DockerContainer> {
 
     private final int maximumPoolSize;
 
     private final long keepStartTime;
 
-    private final CodeExecContainerFactory dockerContainerFactory;
+    private final DockerContainerFactory<T> dockerContainerFactory;
 
-    private final LinkedBlockingQueue<CodeExecContainer> containerQueue = new LinkedBlockingQueue<>();
+    private final LinkedBlockingQueue<T> containerQueue = new LinkedBlockingQueue<>();
 
     private final AtomicInteger containerCount;
 
     public ContainerPoolExecutor(int maximumPoolSize,
                                  long keepStartTime,
                                  TimeUnit unit,
-                                 CodeExecContainerFactory dockerContainerFactory) {
+                                 DockerContainerFactory<T> dockerContainerFactory) {
         this.maximumPoolSize = maximumPoolSize;
         this.keepStartTime = unit.toMillis(keepStartTime);
         this.dockerContainerFactory = dockerContainerFactory;
@@ -40,8 +41,8 @@ public class ContainerPoolExecutor {
                 1, 1, TimeUnit.SECONDS);
     }
 
-    public CodeExecContainer acquireContainer() throws InterruptedException {
-        CodeExecContainer container = containerQueue.poll();
+    public T acquireContainer() throws InterruptedException {
+        T container = containerQueue.poll();
         if (container == null) {
             if (containerCount.get() < maximumPoolSize) {
                 // 创建新的容器
@@ -62,7 +63,7 @@ public class ContainerPoolExecutor {
         return container;
     }
 
-    public void releaseContainer(CodeExecContainer container) {
+    public void releaseContainer(T container) {
         if (container != null) {
             containerQueue.offer(container);
         }

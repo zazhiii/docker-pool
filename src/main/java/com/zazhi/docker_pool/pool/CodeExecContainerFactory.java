@@ -15,7 +15,7 @@ import java.util.UUID;
  * @date 2025/7/2
  * @description: CodeExecContainerFactory 类用于创建 CodeExecContainer 实例
  */
-public class CodeExecContainerFactory {
+public class CodeExecContainerFactory implements DockerContainerFactory<CodeExecContainer> {
 
     private DockerClient dockerClient;
     private String hostWorkingDir;

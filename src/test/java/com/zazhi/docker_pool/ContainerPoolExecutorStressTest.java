@@ -9,6 +9,7 @@ import com.github.dockerjava.transport.DockerHttpClient;
 import com.zazhi.docker_pool.pojo.CodeExecContainer;
 import com.zazhi.docker_pool.pool.CodeExecContainerFactory;
 import com.zazhi.docker_pool.pool.ContainerPoolExecutor;
+import com.zazhi.docker_pool.pool.DockerContainerFactory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -39,8 +40,8 @@ public class ContainerPoolExecutorStressTest {
         int iterations = 100;
         int maxPoolSize = 10;
         long keepAlive = 1000L;
-        CodeExecContainerFactory factory = new CodeExecContainerFactory(getDockerClient(), "/tmp", "/app", 128, "jg");
-        ContainerPoolExecutor pool = new ContainerPoolExecutor(maxPoolSize, keepAlive, TimeUnit.MILLISECONDS, factory);
+        DockerContainerFactory<CodeExecContainer> factory = new CodeExecContainerFactory(getDockerClient(), "/tmp", "/app", 128, "jg");
+        ContainerPoolExecutor<CodeExecContainer> pool = new ContainerPoolExecutor(maxPoolSize, keepAlive, TimeUnit.MILLISECONDS, factory);
 
         CountDownLatch latch = new CountDownLatch(threadCount);
         List<Throwable> errors = new ArrayList<>();

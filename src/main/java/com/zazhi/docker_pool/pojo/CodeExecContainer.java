@@ -23,11 +23,8 @@ public class CodeExecContainer extends DockerContainer{
     private final String containerWorkingDir;
     private final String hostWorkingDir;
 
-    @Setter
-    private long lastUsedTime;
-
     public CodeExecContainer(DockerClient dockerClient, String containerId, String containerName, String containerWorkingDir, String hostWorkingDir) {
-        super(dockerClient, containerId, containerName);
+        super(dockerClient, containerId, containerName, System.currentTimeMillis());
         this.containerWorkingDir = containerWorkingDir;
         this.hostWorkingDir = hostWorkingDir;
     }

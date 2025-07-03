@@ -8,6 +8,7 @@ import com.github.dockerjava.api.model.Frame;
 import com.github.dockerjava.api.model.StreamType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -28,6 +29,9 @@ public abstract class DockerContainer {
     protected String containerId; // 容器ID
 
     protected String containerName;
+
+    @Setter
+    protected long lastUsedTime; // 最后使用时间
 
     public void start() {
         dockerClient.startContainerCmd(containerId).exec();
@@ -54,6 +58,14 @@ public abstract class DockerContainer {
                 .exec();
     }
 
+    /**
+     * 异步执行命令
+     * @param execResponse 创建命令的结果
+     * @param stdout 标准输出流
+     * @param stderr 标准错误输出流
+     * @param stdin 标准输入流
+     * @return
+     */
     public ResultCallback.Adapter<Frame> execCmdAsync(ExecCreateCmdResponse execResponse,
                                                 ByteArrayOutputStream stdout,
                                                 ByteArrayOutputStream stderr,
