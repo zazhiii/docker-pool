@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -56,6 +57,46 @@ public abstract class DockerContainer {
                 .withAttachStdin(true)
                 .withCmd(cmd)
                 .exec();
+    }
+
+    /**
+     * 执行命令
+     * @param cmd 命令
+     * @param stdin 标准输入内容
+     * @return 执行结果，包括标准输出和错误输出
+     * @throws InterruptedException 如果执行过程中被中断
+     */
+    public ExecCmdResult execCmd(String[] cmd, String stdin, long timeout, TimeUnit unit) throws InterruptedException {
+
+        String execID = this.createCmd(cmd).getId();
+
+        ByteArrayOutputStream stdout = new ByteArrayOutputStream();
+        ByteArrayOutputStream stderr = new ByteArrayOutputStream();
+
+        InputStream in = new ByteArrayInputStream(stdin.getBytes());
+
+        boolean awaited = dockerClient.execStartCmd(execID)
+                .withStdIn(in)
+                .exec(new ResultCallback.Adapter<Frame>() {
+                    @Override
+                    public void onNext(Frame frame) {
+                        try {
+                            if (frame.getStreamType() == StreamType.STDOUT) {
+                                stdout.write(frame.getPayload());
+                            } else if (frame.getStreamType() == StreamType.STDERR) {
+                                stderr.write(frame.getPayload());
+                            }
+                        } catch (IOException e) {
+                            throw new RuntimeException("Error writing to output streams", e);
+                        }
+                    }
+                }).awaitCompletion(timeout, unit);
+
+        return ExecCmdResult.builder()
+                .stdout(stdout.toString())
+                .stderr(stderr.toString())
+                .timeout(!awaited)
+                .build();
     }
 
     /**

@@ -20,12 +20,10 @@ import java.util.concurrent.TimeUnit;
 @Getter
 public class CodeExecContainer extends DockerContainer{
 
-    private final String containerWorkingDir;
     private final String hostWorkingDir;
 
-    public CodeExecContainer(DockerClient dockerClient, String containerId, String containerName, String containerWorkingDir, String hostWorkingDir) {
+    public CodeExecContainer(DockerClient dockerClient, String containerId, String containerName, String hostWorkingDir) {
         super(dockerClient, containerId, containerName, System.currentTimeMillis());
-        this.containerWorkingDir = containerWorkingDir;
         this.hostWorkingDir = hostWorkingDir;
     }
 
@@ -61,7 +59,7 @@ public class CodeExecContainer extends DockerContainer{
                             long timeout,
                             TimeUnit timeunit
     ) {
-        ExecCreateCmdResponse resp = this.createCmd("time", "-f", "__TIME__:%U %S %E %M","java", workingDir + File.separator + fileName);
+        ExecCreateCmdResponse resp = this.createCmd("time", "-f", "__TIME__:%U %S %E %M","java", workingDir + "/" + fileName);
         boolean awaited = false;
         ByteArrayOutputStream stdout = new ByteArrayOutputStream();
         ByteArrayOutputStream stderr = new ByteArrayOutputStream();

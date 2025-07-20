@@ -8,6 +8,8 @@ import com.github.dockerjava.httpclient5.ApacheDockerHttpClient;
 import com.github.dockerjava.transport.DockerHttpClient;
 import com.zazhi.docker_pool.pojo.CodeExecContainer;
 import com.zazhi.docker_pool.pojo.CodeRunResult;
+import com.zazhi.docker_pool.pojo.DockerContainer;
+import com.zazhi.docker_pool.pojo.ExecCmdResult;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
@@ -46,9 +48,9 @@ public class CodeExecContainerTest {
 
         String containerId = "bfc4434060fa936019b343ae69bac86bdb39a09b236bad6a9b40975b37b9c5c2"; // 替换为实际容器ID
 
-        CodeExecContainer codeExecContainer = new CodeExecContainer(dockerClient, containerId, "test-container", "/app", "G:\\code_exec_docker_v");
+        CodeExecContainer codeExecContainer = new CodeExecContainer(dockerClient, containerId, "test-container",  "G:\\code_exec_docker_v");
 
-        String s = codeExecContainer.compileJavaCode(codeExecContainer.getContainerWorkingDir() + "/" + FILE_NAME);
+        String s = codeExecContainer.compileJavaCode(FILE_NAME);
 
         if(s != null && !s.isEmpty()) {
             System.out.println("编译错误信息: " + s);
@@ -58,24 +60,25 @@ public class CodeExecContainerTest {
     }
 
     @Test
-    public void testRunJavaCode() {
+    public void testCompileAndRunJavaCode() throws InterruptedException {
+
         DockerClient dockerClient = getDockerClient();
 
-        String containerId = "bfc4434060fa936019b343ae69bac86bdb39a09b236bad6a9b40975b37b9c5c2"; // 替换为实际容器ID
+        String containerId = "8469bd7c0280e5cad8a688e32ed94a0fadeaec502875afa8322fcbbb9dbef14f"; // 替换为实际容器ID
 
-        CodeExecContainer codeExecContainer = new CodeExecContainer(dockerClient, containerId, "test-container", "/app", "G:\\code_exec_docker_v");
+        CodeExecContainer container = new CodeExecContainer(dockerClient, containerId, "",  "G:\\code_exec_docker_v");
 
-        InputStream stdin = new ByteArrayInputStream("1\n".getBytes(StandardCharsets.UTF_8));
+        String[] cmd = new String[]{"javac", "Main.java"};
+        ExecCmdResult compileRes = container.execCmd(cmd, "", 10, TimeUnit.SECONDS);
+        System.out.println("编译输出信息：" + compileRes.getStdout());
+        System.out.println("编译错误信息：" + compileRes.getStderr());
 
-        CodeRunResult result = codeExecContainer.runJavaCode(
-                codeExecContainer.getContainerWorkingDir(),
-                "ExceptionTest.java",
-                stdin,
-                10,
-                TimeUnit.SECONDS
-        );
 
-        System.out.println(result);
+        cmd = new String[]{"java", "Main"};
+        ExecCmdResult res = container.execCmd(cmd, "1 2\n", 10, TimeUnit.SECONDS);
+        System.out.println("执行结果: " + res.getStdout());
+        System.out.println("执行错误信息" + res.getStderr());
+
     }
 
 

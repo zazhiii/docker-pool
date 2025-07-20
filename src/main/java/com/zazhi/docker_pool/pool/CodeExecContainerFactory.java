@@ -17,11 +17,11 @@ import java.util.UUID;
  */
 public class CodeExecContainerFactory implements DockerContainerFactory<CodeExecContainer> {
 
-    private DockerClient dockerClient;
-    private String hostWorkingDir;
-    private String containerWorkingDir;
-    private int memoryLimitMb;
-    private String imageName;
+    private final DockerClient dockerClient;
+    private final String hostWorkingDir;
+    private final String containerWorkingDir;
+    private final int memoryLimitMb;
+    private final String imageName;
 
     public CodeExecContainerFactory(DockerClient dockerClient,
                                     String hostWorkingDir,
@@ -50,8 +50,7 @@ public class CodeExecContainerFactory implements DockerContainerFactory<CodeExec
                 .withWorkingDir(containerWorkingDir) // 设置工作目录
                 .exec();
 
-        return new CodeExecContainer(dockerClient, createRes.getId(), containerName,
-                containerWorkingDir, hostWorkingDir);
+        return new CodeExecContainer(dockerClient, createRes.getId(), containerName, hostWorkingDir);
     }
 
     public CodeExecContainer createDockerContainer() {
@@ -65,8 +64,7 @@ public class CodeExecContainerFactory implements DockerContainerFactory<CodeExec
                 .withWorkingDir(containerWorkingDir) // 设置工作目录
                 .exec();
 
-        return new CodeExecContainer(dockerClient, createRes.getId(), "",
-                containerWorkingDir, hostWorkingDir);
+        return new CodeExecContainer(dockerClient, createRes.getId(), "", hostWorkingDir);
     }
 
 }
